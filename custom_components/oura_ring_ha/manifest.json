@@ -1,0 +1,12 @@
+{
+  "domain": "oura_ring_ha",
+  "name": "Oura Ring HA",
+  "documentation": "https://github.com/akeslo/oura_ring_ha",
+  "dependencies": [],
+  "codeowners": [
+    "@akeslo"
+  ],
+  "requirements": [],
+  "config_flow": false,
+  "iot_class": "cloud_polling"
+}

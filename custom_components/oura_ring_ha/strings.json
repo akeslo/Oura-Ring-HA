@@ -1,0 +1,12 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "api_token": "Personal Access Token"
+        },
+        "description": "To generate a Personal Access Token go to https://cloud.ouraring.com/personal-access-tokens/"
+      }
+    }
+  }
+}
