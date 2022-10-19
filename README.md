@@ -6,16 +6,16 @@
 A custom component to display the [Oura Ring](https://cloud.ouraring.com/) data from the [v2 API](https://cloud.ouraring.com/docs/)
 
 # Installation
-This can be installed via HACS or by copying all the files from custom_components/oura_ring_ha/ to <config directory>/custom_components/oura_ring_api/.
+This can be installed via HACS or by copying all the files from custom_components/oura_ring_ha/ to <config directory>/custom_components/ouraring/.
 
 # Configuration
 Add the following to *configuration.yaml*
 
     # Example configuration.yaml entry
-    sensors:
+    sensor:
     
-    - platform: oura_ring_api
-      api_token: API_TOKEN_HERE
+        - platform: ouraring
+          api_token: API_TOKEN_HERE
 
 The above configuration will generate an entity with the id sensor.oura_ring_ha and current value as the sleep score along with these attributes from yesterday:
 
