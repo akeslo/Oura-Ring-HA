@@ -1,6 +1,6 @@
 {
   "domain": "oura_ring_api",
-  "name": "Oura Ring HA",
+  "name": "Oura Ring API",
   "documentation": "https://github.com/akeslo/oura_ring_ha",
   "dependencies": [],
   "codeowners": [

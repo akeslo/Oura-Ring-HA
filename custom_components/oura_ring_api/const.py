@@ -1,7 +1,7 @@
 """Constants for integration_blueprint."""
 
 # Base component constants
-NAME = "Oura Ring HA"
+NAME = "Oura Ring Api"
 DOMAIN = "oura_ring_ha"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.1"
