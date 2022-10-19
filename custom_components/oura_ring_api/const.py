@@ -2,7 +2,7 @@
 
 # Base component constants
 NAME = "Oura Ring Api"
-DOMAIN = "oura_ring_ha"
+DOMAIN = "ouraring"
 DOMAIN_DATA = f"{DOMAIN}_data"
 VERSION = "0.1"
 
