@@ -1,5 +1,5 @@
 {
-  "domain": "oura_ring_ha",
+  "domain": "oura_ring_sensors",
   "name": "Oura Ring HA",
   "documentation": "https://github.com/akeslo/oura_ring_ha",
   "dependencies": [],
