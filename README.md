@@ -32,8 +32,12 @@ The above configuration will generate an entity with the id sensor.oura_ring_ha 
     total_sleep_duration
     awake_duration
     in_bed_duration
-
+    
 The motivation for this came from using the [oura-custom-component](https://github.com/nitobuendia/oura-custom-component) integration.
 
+## Example
+![image](https://user-images.githubusercontent.com/3003773/197098406-c7160300-b1a9-46e2-b00e-198b7f95003f.png)
+
 ## *Notice: This is a work in progress, all help is welcome :)*
+
 
