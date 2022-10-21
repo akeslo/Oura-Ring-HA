@@ -1,7 +1,9 @@
 """This modules connects to the oura API v2"""
 
-import requests
 import logging
+
+import requests
+
 from .const import OURA_TOKEN
 
 # Oura API config.
@@ -14,15 +16,15 @@ class OuraURLs:
     """Class representing Oura Endpoint URLs"""
 
     # Data endpoints.
-    DAILY_ACTIVITY = "{}/daily_activity".format(_OURA_API)
-    DAILY_READINESS = "{}/daily_readiness".format(_OURA_API)
-    DAILY_SLEEP = "{}/daily_sleep".format(_OURA_API)
-    HEARTRATE = "{}/heartrate".format(_OURA_API)
-    PERSONAL_INFO = "{}/personal_info".format(_OURA_API)
-    SESSION = "{}/session".format(_OURA_API)
-    SLEEP = "{}/sleep".format(_OURA_API)
-    TAG = "{}/tag".format(_OURA_API)
-    WORKOUT = "{}/workout".format(_OURA_API)
+    DAILY_ACTIVITY = f"{_OURA_API}/daily_activity"
+    DAILY_READINESS = f"{_OURA_API}/daily_readiness"
+    DAILY_SLEEP = f"{_OURA_API}/daily_sleep"
+    HEARTRATE = f"{_OURA_API}/heartrate"
+    PERSONAL_INFO = f"{_OURA_API}/personal_info"
+    SESSION = f"{_OURA_API}/session"
+    SLEEP = f"{_OURA_API}/sleep"
+    TAG = f"{_OURA_API}/tag"
+    WORKOUT = f"{_OURA_API}/workout"
 
 
 class OuraAPI:
@@ -47,9 +49,14 @@ class OuraAPI:
             return result
         return None
 
-    def get_data(self, token, endpoint, start_date=None, end_date=None, next_token=None):
+    def get_data(
+        self, token, endpoint, start_date=None, end_date=None, next_token=None
+    ):
         """Setup request to Daily endpoints"""
         # end_date default to current UTC date
         # start_date default to end_date - 1 day
-        params = {"start_date": start_date, "end_date": end_date,}
+        params = {
+            "start_date": start_date,
+            "end_date": end_date,
+        }
         return self.make_request(endpoint, token, params)

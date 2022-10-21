@@ -1,12 +1,17 @@
 """Platform for sensor integration."""
 from __future__ import annotations
+
+from datetime import datetime, timedelta
+
+from dateutil import parser
+import voluptuous as vol
+
+from homeassistant.const import CONF_API_TOKEN
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
-from homeassistant.helpers.entity import Entity
-from homeassistant.core import HomeAssistant
-from datetime import datetime, timedelta
-from homeassistant.const import CONF_API_TOKEN
-import voluptuous as vol
+
 from . import oura_api
 
 TOKEN = ""
@@ -37,6 +42,10 @@ _EMPTY_SENSOR_ATTRIBUTE = {
 def _seconds_to_hours(time_in_seconds):
     """Parses times in seconds and converts it to hours."""
     return round(int(time_in_seconds) / (60 * 60), 2)
+
+
+def _datetime_to_time(received_date):
+    return received_date
 
 
 def setup_platform(
@@ -90,40 +99,47 @@ class OuraSleep(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-        utc_now = datetime.utcnow()
-        utc_now_string = utc_now.strftime("%Y-%m-%d")
-        utc_yest = utc_now - timedelta(1)
-        utc_yest_string = utc_yest.strftime("%Y-%m-%d")
+        now = datetime.now()
+        now_string = now.strftime("%Y-%m-%d")
+        yest = now - timedelta(1)
+        yest_string = yest.strftime("%Y-%m-%d")
         daily_sleep_response = api.get_data(
             self._oura_token,
             oura_api.OuraURLs.DAILY_SLEEP,
-            utc_yest_string,
-            utc_now_string,
+            yest_string,
+            now_string,
         )
-        self._state = daily_sleep_response["data"][0]["score"]
-        sleep_response = api.get_data(
-            self._oura_token, oura_api.OuraURLs.SLEEP, utc_yest_string, utc_now_string
-        )["data"]
-        for item in sleep_response:
-            if item["type"] == "long_sleep":
-                self._attributes[item["day"]] = {
-                    "date": item["day"],
-                    "bedtime_start_hour": item["bedtime_start"],
-                    "bedtime_end_hour": item["bedtime_end"],
-                    "breath_average": item["average_breath"],
-                    "temperature_delta": item["readiness"]["temperature_deviation"],
-                    "lowest_heart_rate": item["lowest_heart_rate"],
-                    "heart_rate_average": item["average_heart_rate"],
-                    "deep_sleep_duration": _seconds_to_hours(
-                        item["deep_sleep_duration"]
-                    ),
-                    "rem_sleep_duration": _seconds_to_hours(item["rem_sleep_duration"]),
-                    "light_sleep_duration": _seconds_to_hours(
-                        item["light_sleep_duration"]
-                    ),
-                    "total_sleep_duration": _seconds_to_hours(
-                        item["total_sleep_duration"]
-                    ),
-                    "awake_duration": _seconds_to_hours(item["awake_time"]),
-                    "in_bed_duration": _seconds_to_hours(item["time_in_bed"]),
-                }
+        if daily_sleep_response["data"][0]["score"] > 0:
+            self._state = daily_sleep_response["data"][0]["score"]
+            sleep_response = api.get_data(
+                self._oura_token, oura_api.OuraURLs.SLEEP, yest_string, now_string
+            )["data"]
+            for item in sleep_response:
+                if item["type"] == "long_sleep":
+
+                    bedtime_start = parser.parse(item["bedtime_start"])
+                    bedtime_end = parser.parse(item["bedtime_end"])
+
+                    self._attributes["data"] = {
+                        "date": item["day"],
+                        "bedtime_start_hour": bedtime_start.strftime("%H:%M"),
+                        "bedtime_end_hour": bedtime_end.strftime("%H:%M"),
+                        "breath_average": item["average_breath"],
+                        "temperature_delta": item["readiness"]["temperature_deviation"],
+                        "lowest_heart_rate": item["lowest_heart_rate"],
+                        "heart_rate_average": item["average_heart_rate"],
+                        "deep_sleep_duration": _seconds_to_hours(
+                            item["deep_sleep_duration"]
+                        ),
+                        "rem_sleep_duration": _seconds_to_hours(
+                            item["rem_sleep_duration"]
+                        ),
+                        "light_sleep_duration": _seconds_to_hours(
+                            item["light_sleep_duration"]
+                        ),
+                        "total_sleep_duration": _seconds_to_hours(
+                            item["total_sleep_duration"]
+                        ),
+                        "awake_duration": _seconds_to_hours(item["awake_time"]),
+                        "in_bed_duration": _seconds_to_hours(item["time_in_bed"]),
+                    }

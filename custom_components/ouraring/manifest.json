@@ -3,9 +3,7 @@
   "name": "Oura Ring",
   "documentation": "https://github.com/akeslo/ouraring",
   "dependencies": [],
-  "codeowners": [
-    "@akeslo"
-  ],
+  "codeowners": ["@akeslo"],
   "requirements": [],
   "config_flow": false,
   "iot_class": "cloud_polling",
