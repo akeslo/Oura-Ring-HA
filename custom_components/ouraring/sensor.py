@@ -113,11 +113,13 @@ class OuraSleep(Entity):
         )
         if daily_sleep_response["data"][0]["score"] > 0:
             self._state = daily_sleep_response["data"][0]["score"]
+            logging.info("Oura: Score Updated: %s", self._state)
             sleep_response = api.get_data(
                 self._oura_token, oura_api.OuraURLs.SLEEP, now_string, tom_string
             )["data"]
             for item in sleep_response:
                 if item["type"] == "long_sleep":
+                    logging.info("Oura: Updating Sleep Data: %s", item)
                     bedtime_start = parser.parse(item["bedtime_start"])
                     bedtime_end = parser.parse(item["bedtime_end"])
 
