@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from dateutil import parser
 import voluptuous as vol
-
+import logging
 from homeassistant.const import CONF_API_TOKEN
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
@@ -103,20 +103,21 @@ class OuraSleep(Entity):
         now_string = now.strftime("%Y-%m-%d")
         yest = now - timedelta(1)
         yest_string = yest.strftime("%Y-%m-%d")
+        tom = now + timedelta(1)
+        tom_string = tom.strftime("%Y-%m-%d")
         daily_sleep_response = api.get_data(
             self._oura_token,
             oura_api.OuraURLs.DAILY_SLEEP,
-            yest_string,
             now_string,
+            tom_string,
         )
         if daily_sleep_response["data"][0]["score"] > 0:
             self._state = daily_sleep_response["data"][0]["score"]
             sleep_response = api.get_data(
-                self._oura_token, oura_api.OuraURLs.SLEEP, yest_string, now_string
+                self._oura_token, oura_api.OuraURLs.SLEEP, now_string, tom_string
             )["data"]
             for item in sleep_response:
                 if item["type"] == "long_sleep":
-
                     bedtime_start = parser.parse(item["bedtime_start"])
                     bedtime_end = parser.parse(item["bedtime_end"])
 
