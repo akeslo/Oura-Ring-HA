@@ -17,21 +17,15 @@ Add the following to *configuration.yaml*
         - platform: ouraring
           api_token: API_TOKEN_HERE
 
-The above configuration will generate an entity with the id sensor.oura_ring_ha and current value as the sleep score along with these attributes from yesterday:
+The above configuration will generate the following sensor entities with the state set as the Oura score for each category respectively
+   
+   - oura_ring_sleep
+   ![image](https://user-images.githubusercontent.com/3003773/197370662-e41a9230-ad9d-4196-81d8-7e2a918dacbd.png)
 
-    date
-    bedtime_start_hour
-    bedtime_end_hour
-    breath_average
-    temperature_delta
-    resting_heart_rate
-    heart_rate_average
-    deep_sleep_duration
-    rem_sleep_duration
-    light_sleep_duration
-    total_sleep_duration
-    awake_duration
-    in_bed_duration
+   - oura_ring_activity
+   ![image](https://user-images.githubusercontent.com/3003773/197370672-82df839d-fbcc-4461-ae85-9314d33cea5f.png)
+
+   - oura_ring_readiness
     
 The motivation for this came from using the [oura-custom-component](https://github.com/nitobuendia/oura-custom-component) integration.
 
