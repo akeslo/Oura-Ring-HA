@@ -269,7 +269,7 @@ class OuraActivity(Entity):
 
             # Get Workout Data
             daily_workout_response = api.get_data(
-                self._oura_token, oura_api.OuraURLs.WORKOUT
+                self._oura_token, oura_api.OuraURLs.WORKOUT, yest_string, tom_string
             )
             if "data" in daily_workout_response:
                 workouts = daily_workout_response["data"]
