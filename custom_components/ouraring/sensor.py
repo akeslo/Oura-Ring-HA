@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
-
 from dateutil import parser
 import voluptuous as vol
 import logging
@@ -20,23 +19,6 @@ OURA_SCHEMA = vol.Schema(
         vol.Required(CONF_API_TOKEN): str,
     }
 )
-
-
-_EMPTY_SENSOR_ATTRIBUTE = {
-    "date": None,
-    "bedtime_start_hour": None,
-    "bedtime_end_hour": None,
-    "breath_average": None,
-    "temperature_delta": None,
-    "resting_heart_rate": None,
-    "heart_rate_average": None,
-    "deep_sleep_duration": None,
-    "rem_sleep_duration": None,
-    "light_sleep_duration": None,
-    "total_sleep_duration": None,
-    "awake_duration": None,
-    "in_bed_duration": None,
-}
 
 
 def _seconds_to_hours(time_in_seconds):
@@ -99,27 +81,28 @@ class OuraSleep(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-        now = datetime.now()
-        now_string = now.strftime("%Y-%m-%d")
-        yest = now - timedelta(1)
-        yest_string = yest.strftime("%Y-%m-%d")
-        tom = now + timedelta(1)
-        tom_string = tom.strftime("%Y-%m-%d")
+        # now = datetime.now()
+        # now_string = now.strftime("%Y-%m-%d")
+        # yest = now - timedelta(1)
+        # yest_string = yest.strftime("%Y-%m-%d")
+        # tom = now + timedelta(1)
+        # tom_string = tom.strftime("%Y-%m-%d")
+
         daily_sleep_response = api.get_data(
-            self._oura_token,
-            oura_api.OuraURLs.DAILY_SLEEP,
-            now_string,
-            tom_string,
+            self._oura_token, oura_api.OuraURLs.DAILY_SLEEP
         )
-        if daily_sleep_response["data"][0]["score"] > 0:
+
+        if "data" in daily_sleep_response:
             self._state = daily_sleep_response["data"][0]["score"]
-            logging.info("Oura: Score Updated: %s", self._state)
-            sleep_response = api.get_data(
-                self._oura_token, oura_api.OuraURLs.SLEEP, now_string, tom_string
-            )["data"]
+            logging.info("OuraRing: Score Updated: %s", self._state)
+
+            sleep_response = api.get_data(self._oura_token, oura_api.OuraURLs.SLEEP)[
+                "data"
+            ]
+
             for item in sleep_response:
                 if item["type"] == "long_sleep":
-                    logging.info("Oura: Updating Sleep Data: %s", item)
+                    logging.info("OuraRing: Updating Sleep Data: %s", item)
                     bedtime_start = parser.parse(item["bedtime_start"])
                     bedtime_end = parser.parse(item["bedtime_end"])
 
