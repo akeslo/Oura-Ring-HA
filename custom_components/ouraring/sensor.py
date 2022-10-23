@@ -269,12 +269,14 @@ class OuraActivity(Entity):
 
             # Get Workout Data
             daily_workout_response = api.get_data(
-                self._oura_token, oura_api.OuraURLs.WORKOUT, yest_string, tom_string
+                self._oura_token, oura_api.OuraURLs.WORKOUT
             )
             if "data" in daily_workout_response:
                 workouts = daily_workout_response["data"]
                 i = 1
-                for item in workouts:
+                for item in workouts[
+                    ::-1
+                ]:  # reverse array before loop so newest go first
                     end_datetime = parser.parse(item["end_datetime"]).strftime("%H:%M")
                     start_datetime = parser.parse(item["start_datetime"]).strftime(
                         "%H:%M"
