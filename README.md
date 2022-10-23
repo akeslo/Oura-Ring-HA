@@ -30,7 +30,7 @@ The above configuration will generate the following sensor entities with the sta
 The motivation for this came from using the [oura-custom-component](https://github.com/nitobuendia/oura-custom-component) integration.
 
 ## Example
-![image](https://user-images.githubusercontent.com/3003773/197419839-c9155682-fc96-45d0-a985-1b8942f62f4d.png)
+![image](https://user-images.githubusercontent.com/3003773/197419861-003e9785-d6c6-45dc-bf6c-79ee0e9332b7.png)
 ![image](https://user-images.githubusercontent.com/3003773/197098406-c7160300-b1a9-46e2-b00e-198b7f95003f.png)
 
 ## *Notice: This is a work in progress, all help is welcome :)*
