@@ -20,6 +20,13 @@ OURA_SCHEMA = vol.Schema(
     }
 )
 
+now = datetime.now()
+# now_string = now.strftime("%Y-%m-%d")
+yest = now - timedelta(1)
+yest_string = yest.strftime("%Y-%m-%d")
+tom = now + timedelta(1)
+tom_string = tom.strftime("%Y-%m-%d")
+
 
 def tdelta_to_hour_min(td):
     return str(td.seconds // 3600) + "hr " + str((td.seconds // 60) % 60) + "min"
@@ -91,24 +98,19 @@ class OuraSleep(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-        # now = datetime.now()
-        # now_string = now.strftime("%Y-%m-%d")
-        # yest = now - timedelta(1)
-        # yest_string = yest.strftime("%Y-%m-%d")
-        # tom = now + timedelta(1)
-        # tom_string = tom.strftime("%Y-%m-%d")
 
         daily_sleep_response = api.get_data(
-            self._oura_token, oura_api.OuraURLs.DAILY_SLEEP
+            self._oura_token, oura_api.OuraURLs.DAILY_SLEEP, yest_string, tom_string
         )
-
         if "data" in daily_sleep_response:
-            self._state = daily_sleep_response["data"][0]["score"]
+            self._state = daily_sleep_response["data"][(len(daily_sleep_response) - 1)][
+                "score"
+            ]
             logging.info("OuraRing: Sleep Score Updated: %s", self._state)
 
-            sleep_response = api.get_data(self._oura_token, oura_api.OuraURLs.SLEEP)[
-                "data"
-            ]
+            sleep_response = api.get_data(
+                self._oura_token, oura_api.OuraURLs.SLEEP, yest_string, tom_string
+            )["data"]
 
             for item in sleep_response:
                 if item["type"] == "long_sleep":
@@ -137,7 +139,6 @@ class OuraSleep(Entity):
                         ),
                         "awake_duration": _seconds_to_hours(item["awake_time"]),
                         "in_bed_duration": _seconds_to_hours(item["time_in_bed"]),
-                        "day": item["day"],
                     }
                     logging.info("OuraRing: Updated Sleep Data: %s", self._attributes)
 
@@ -236,32 +237,38 @@ class OuraActivity(Entity):
         api = oura_api.OuraAPI()
 
         daily_activity_response = api.get_data(
-            self._oura_token, oura_api.OuraURLs.DAILY_ACTIVITY
+            self._oura_token, oura_api.OuraURLs.DAILY_ACTIVITY, yest_string, tom_string
         )
 
         if "data" in daily_activity_response:
-            self._state = daily_activity_response["data"][0]["score"]
+            index = len(daily_activity_response) - 1
+            self._state = daily_activity_response["data"][index]["score"]
             logging.info("OuraRing: Activity Score Updated: %s", self._state)
 
             self._attributes["data"] = {
-                "active_calories": daily_activity_response["data"][0][
+                "active_calories": daily_activity_response["data"][index][
                     "active_calories"
                 ],
-                "total_calories": daily_activity_response["data"][0]["total_calories"],
-                "inactivity_alerts": daily_activity_response["data"][0][
+                "total_calories": daily_activity_response["data"][index][
+                    "total_calories"
+                ],
+                "inactivity_alerts": daily_activity_response["data"][index][
                     "inactivity_alerts"
                 ],
-                "non_wear_time": daily_activity_response["data"][0]["non_wear_time"],
-                "steps": daily_activity_response["data"][0]["steps"],
-                "target_calories": daily_activity_response["data"][0][
+                "non_wear_time": daily_activity_response["data"][index][
+                    "non_wear_time"
+                ],
+                "steps": daily_activity_response["data"][index]["steps"],
+                "target_calories": daily_activity_response["data"][index][
                     "target_calories"
                 ],
+                "date": daily_activity_response["data"][index]["day"],
             }
             logging.info("OuraRing: Updated Activity Data: %s", self._attributes)
 
             # Get Workout Data
             daily_workout_response = api.get_data(
-                self._oura_token, oura_api.OuraURLs.WORKOUT
+                self._oura_token, oura_api.OuraURLs.WORKOUT, yest_string, tom_string
             )
             if "data" in daily_workout_response:
                 workouts = daily_workout_response["data"]
@@ -285,7 +292,7 @@ class OuraActivity(Entity):
                         "intensity": item["intensity"],
                         "label": item["label"],
                         "source": item["source"],
-                        "day": item["day"],
+                        "date": item["day"],
                     }
                     logging.info(
                         "OuraRing: Updated Workout Data: %s",
