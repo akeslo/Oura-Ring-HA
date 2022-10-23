@@ -186,11 +186,12 @@ class OuraReadiness(Entity):
         api = oura_api.OuraAPI()
 
         daily_readiness_response = api.get_data(
-            self._oura_token, oura_api.OuraURLs.DAILY_READINESS
+            self._oura_token, oura_api.OuraURLs.DAILY_READINESS, yest_string, tom_string
         )
 
         if "data" in daily_readiness_response:
-            self._state = daily_readiness_response["data"][0]["score"]
+            index = len(daily_readiness_response) - 1
+            self._state = daily_readiness_response["data"][index]["score"]
             logging.info("OuraRing: Readiness Score Updated: %s", self._state)
 
 
