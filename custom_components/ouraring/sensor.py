@@ -20,13 +20,6 @@ OURA_SCHEMA = vol.Schema(
     }
 )
 
-now = datetime.now()
-# now_string = now.strftime("%Y-%m-%d")
-yest = now - timedelta(1)
-yest_string = yest.strftime("%Y-%m-%d")
-tom = now + timedelta(1)
-tom_string = tom.strftime("%Y-%m-%d")
-
 
 def tdelta_to_hour_min(td):
     return str(td.seconds // 3600) + "hr " + str((td.seconds // 60) % 60) + "min"
@@ -37,8 +30,9 @@ def _seconds_to_hours(time_in_seconds):
     return round(int(time_in_seconds) / (60 * 60), 2)
 
 
-def _datetime_to_time(received_date):
-    return received_date
+def _get_date_string(days_from_now):
+    date_delta = datetime.now() + timedelta(days_from_now)
+    return date_delta.strftime("%Y-%m-%d")
 
 
 def setup_platform(
@@ -57,6 +51,7 @@ def setup_platform(
     )
 
 
+# SLEEP
 class OuraSleep(Entity):
 
     """Representation of a Sensor."""
@@ -98,7 +93,8 @@ class OuraSleep(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-
+        yest_string = _get_date_string(-1)
+        tom_string = _get_date_string(1)
         daily_sleep_response = api.get_data(
             self._oura_token, oura_api.OuraURLs.DAILY_SLEEP, yest_string, tom_string
         )
@@ -107,7 +103,6 @@ class OuraSleep(Entity):
                 "score"
             ]
             logging.info("OuraRing: Sleep Score Updated: %s", self._state)
-
             sleep_response = api.get_data(
                 self._oura_token, oura_api.OuraURLs.SLEEP, yest_string, tom_string
             )["data"]
@@ -143,6 +138,7 @@ class OuraSleep(Entity):
                     logging.info("OuraRing: Updated Sleep Data: %s", self._attributes)
 
 
+# ACTIVITY
 class OuraReadiness(Entity):
 
     """Representation of a Sensor."""
@@ -184,7 +180,8 @@ class OuraReadiness(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-
+        yest_string = _get_date_string(-1)
+        tom_string = _get_date_string(1)
         daily_readiness_response = api.get_data(
             self._oura_token, oura_api.OuraURLs.DAILY_READINESS, yest_string, tom_string
         )
@@ -195,6 +192,7 @@ class OuraReadiness(Entity):
             logging.info("OuraRing: Readiness Score Updated: %s", self._state)
 
 
+# READINESS
 class OuraActivity(Entity):
 
     """Representation of a Sensor."""
@@ -236,7 +234,8 @@ class OuraActivity(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-
+        yest_string = _get_date_string(-1)
+        tom_string = _get_date_string(1)
         daily_activity_response = api.get_data(
             self._oura_token, oura_api.OuraURLs.DAILY_ACTIVITY, yest_string, tom_string
         )
