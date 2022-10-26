@@ -347,7 +347,7 @@ class OuraHeartRate(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         api = oura_api.OuraAPI()
-        yest_string = _get_date_string(-1)
+        yest_string = _get_date_string(-7)
         tom_string = _get_date_string(1)
         heartrate_response = api.get_data(
             self._oura_token, oura_api.OuraURLs.HEARTRATE, yest_string, tom_string
@@ -369,5 +369,8 @@ class OuraHeartRate(Entity):
                 timestamp_array.append(item["timestamp"])
 
             self._attributes["state_timestamp"] = heartrate_response["data"][index]["timestamp"]
+            self._attributes["period_start"] = heartrate_response["data"][0]["timestamp"]
+            self._attributes["period_end"] = heartrate_response["data"][index]["timestamp"]
             self._attributes["bpm"] = bpm_array
             self._attributes["timestamps"] = timestamp_array
+            logging.info("OuraRing: Heartrate Stats Updated: %s", bpm_array)
