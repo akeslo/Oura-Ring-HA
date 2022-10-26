@@ -51,6 +51,7 @@ def setup_platform(
             OuraSleep(config, hass),
             OuraReadiness(config, hass),
             OuraActivity(config, hass),
+            OuraHeartRate(config, hass),
         ]
     )
 
@@ -303,3 +304,70 @@ class OuraActivity(Entity):
                         self._attributes["workout_" + str(i)],
                     )
                     i = i + 1
+
+# HeartRate
+class OuraHeartRate(Entity):
+
+    """Representation of a Sensor."""
+
+    def __init__(self, config, hass):
+        """Initialize the sensor."""
+        self._state = 0
+        self._attributes = {}
+        self._oura_token = config.get(CONF_API_TOKEN)
+
+    @property
+    def name(self) -> str:
+        """Return the name of the sensor."""
+        return "Oura Heart Activity"
+
+    @property
+    def state(self) -> int:
+        """Return the state of the sensor."""
+        return self._state
+
+    @property
+    def icon(self) -> str:
+        """Return the state of the sensor."""
+        return "mdi:heart"
+
+    @property
+    def unit_of_measurement(self) -> str:
+        """Return the unit of measurement."""
+        return ""
+
+    @property
+    # pylint: disable=hass-return-type
+    def extra_state_attributes(self):
+        return self._attributes
+
+    def update(self) -> None:
+        """Fetch new state data for the sensor.
+
+        This is the only method that should fetch new data for Home Assistant.
+        """
+        api = oura_api.OuraAPI()
+        yest_string = _get_date_string(-1)
+        tom_string = _get_date_string(1)
+        heartrate_response = api.get_data(
+            self._oura_token, oura_api.OuraURLs.HEARTRATE, yest_string, tom_string
+        )
+        if "data" in heartrate_response:
+
+            index = len(heartrate_response["data"]) - 1
+            self._state = heartrate_response["data"][index]["bpm"]
+            logging.info("OuraRing: Heartrate Updated: %s", self._state)
+
+            #make array of bpm
+            bpm_array = []
+            for item in heartrate_response["data"]:
+                bpm_array.append(item["bpm"])
+
+            #make array of timestamp
+            timestamp_array = []
+            for item in heartrate_response["data"]:
+                timestamp_array.append(item["timestamp"])
+
+            self._attributes["state_timestamp"] = heartrate_response["data"][index]["timestamp"]
+            self._attributes["bpm"] = bpm_array
+            self._attributes["timestamps"] = timestamp_array
