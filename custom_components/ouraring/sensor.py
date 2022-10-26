@@ -31,7 +31,11 @@ def _seconds_to_hours(time_in_seconds):
 
 
 def _get_date_string(days_from_now):
-    date_delta = datetime.now() + timedelta(days_from_now)
+    if days_from_now < 0:
+        days_from_now = days_from_now * -1
+        date_delta = datetime.now() - timedelta(days_from_now)
+    else:
+        date_delta = datetime.now() + timedelta(days_from_now)
     return date_delta.strftime("%Y-%m-%d")
 
 
@@ -99,9 +103,7 @@ class OuraSleep(Entity):
             self._oura_token, oura_api.OuraURLs.DAILY_SLEEP, yest_string, tom_string
         )
         if "data" in daily_sleep_response:
-            self._state = daily_sleep_response["data"][(len(daily_sleep_response) - 1)][
-                "score"
-            ]
+            self._state = daily_sleep_response["data"][(len(daily_sleep_response["data"]) - 1)]["score"]
             logging.info("OuraRing: Sleep Score Updated: %s", self._state)
             sleep_response = api.get_data(
                 self._oura_token, oura_api.OuraURLs.SLEEP, yest_string, tom_string
@@ -187,7 +189,7 @@ class OuraReadiness(Entity):
         )
 
         if "data" in daily_readiness_response:
-            index = len(daily_readiness_response) - 1
+            index = len(daily_readiness_response["data"]) - 1
             self._state = daily_readiness_response["data"][index]["score"]
             logging.info("OuraRing: Readiness Score Updated: %s", self._state)
 
@@ -241,7 +243,7 @@ class OuraActivity(Entity):
         )
 
         if "data" in daily_activity_response:
-            index = len(daily_activity_response) - 1
+            index = len(daily_activity_response["data"]) - 1
             self._state = daily_activity_response["data"][index]["score"]
             logging.info("OuraRing: Activity Score Updated: %s", self._state)
 
