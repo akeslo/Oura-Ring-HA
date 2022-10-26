@@ -32,6 +32,7 @@ The motivation for this came from using the [oura-custom-component](https://gith
 ## Example
 ![image](https://user-images.githubusercontent.com/3003773/197419861-003e9785-d6c6-45dc-bf6c-79ee0e9332b7.png)
 ![image](https://user-images.githubusercontent.com/3003773/197098406-c7160300-b1a9-46e2-b00e-198b7f95003f.png)
+![image](https://user-images.githubusercontent.com/3003773/198157533-3cf78f56-0f7c-422f-8332-43ce17684748.png)
 
 ## *Notice: This is a work in progress, all help is welcome :)*
 
