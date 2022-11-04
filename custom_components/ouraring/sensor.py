@@ -73,6 +73,11 @@ class OuraSleep(Entity):
         return "Oura Ring Sleep"
 
     @property
+    def unique_id(self) -> str:
+        """Return a unique id for the sensor."""
+        return "oura_ring_sleep"
+
+    @property
     def state(self) -> int:
         """Return the state of the sensor."""
         return self._state
@@ -164,6 +169,11 @@ class OuraReadiness(Entity):
         return "Oura Ring Readiness"
 
     @property
+    def unique_id(self) -> str:
+        """Return a unique id for the sensor."""
+        return "oura_ring_readiness"
+
+    @property
     def state(self) -> int:
         """Return the state of the sensor."""
         return self._state
@@ -219,6 +229,11 @@ class OuraActivity(Entity):
     def name(self) -> str:
         """Return the name of the sensor."""
         return "Oura Ring Activity"
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique id for the sensor."""
+        return "oura_ring_activity"
 
     @property
     def state(self) -> int:
@@ -334,6 +349,11 @@ class OuraHeartRate(Entity):
     def name(self) -> str:
         """Return the name of the sensor."""
         return "Oura Heart Activity"
+
+    @property
+    def unique_id(self) -> str:
+        """Return a unique id for the sensor."""
+        return "oura_ring_heart_activity"
 
     @property
     def state(self) -> int:
