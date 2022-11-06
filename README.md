@@ -30,9 +30,207 @@ The above configuration will generate the following sensor entities with the sta
 The motivation for this came from using the [oura-custom-component](https://github.com/nitobuendia/oura-custom-component) integration.
 
 ## Example
-![image](https://user-images.githubusercontent.com/3003773/197419861-003e9785-d6c6-45dc-bf6c-79ee0e9332b7.png)
-![image](https://user-images.githubusercontent.com/3003773/197098406-c7160300-b1a9-46e2-b00e-198b7f95003f.png)
-![image](https://user-images.githubusercontent.com/3003773/198157533-3cf78f56-0f7c-422f-8332-43ce17684748.png)
+![image](https://user-images.githubusercontent.com/3003773/200173350-56aa00d8-b9d6-4e54-a060-eb74ea6be13d.png)
+![image](https://user-images.githubusercontent.com/3003773/200173295-42f1170b-71af-40bf-a16b-28aa923485ac.png)
+![image](https://user-images.githubusercontent.com/3003773/200173308-ffb83d9b-01da-41c6-a638-b830ec721730.png)
+![image](https://user-images.githubusercontent.com/3003773/200173336-5dcefe12-6777-4ae7-9307-8abef817dd6b.png)
+
+```
+type: vertical-stack
+cards:
+  - type: entities
+    title: Wellness Indicators
+    entities:
+      - entity: sensor.bed_time_yesterday
+        name: Bed Time
+      - entity: sensor.wake_time_yesterday
+        name: Wake Time
+        secondary_info: none
+      - type: custom:template-entity-row
+        name: Calories Burned
+        state: >-
+          {{ "{:,}
+          cals".format(states.sensor.oura_ring_activity.attributes.data.total_calories)
+          }}
+        entity: sensor.oura_ring_activity
+        icon: mdi:fire
+        unit: Cals
+      - type: custom:template-entity-row
+        name: Active Calories Burned
+        state: >-
+          {{ states.sensor.oura_ring_activity.attributes.data.active_calories }}
+          / {{ states.sensor.oura_ring_activity.attributes.data.target_calories
+          }}
+        entity: sensor.oura_ring_activity
+        icon: mdi:fire-alert
+      - type: custom:template-entity-row
+        name: Steps
+        entity: sensor.oura_ring_activity
+        state: >-
+          {{ "{:,}
+          steps".format(states.sensor.oura_ring_activity.attributes.data.steps)
+          }}
+        icon: mdi:shoe-sneaker
+      - type: custom:template-entity-row
+        name: >-
+          {{ states.sensor.oura_ring_activity.attributes.workout_1.intensity |
+          capitalize }} {{
+          states.sensor.oura_ring_activity.attributes.workout_1.activity |
+          capitalize }} 
+        entity: sensor.oura_ring_activity
+        state: '{{ states.sensor.oura_ring_activity.attributes.workout_1.duration }}'
+        icon: mdi:weight-lifter
+        secondary: >-
+          {{
+          as_timestamp(states.sensor.oura_ring_activity.attributes.workout_1.date)
+          | timestamp_custom("%a %b %d", True) }} 
+      - type: custom:template-entity-row
+        entity: sensor.oura_heart_activity
+        name: Heart Activity
+        secondary: >-
+          {{as_timestamp(states.sensor.oura_heart_activity.attributes.state_timestamp)
+          | timestamp_custom("%H:%M:%S", True) }}
+  - type: custom:apexcharts-card
+    apex_config:
+      chart:
+        height: 200px
+    graph_span: 12h
+    header:
+      show: true
+      show_states: true
+      colorize_states: true
+      title: Heart Rate
+      standard_format: true
+    series:
+      - entity: sensor.oura_heart_activity
+        name: Heart Rate
+        data_generator: |
+          return entity.attributes.timestamps.map((peak, index) => {
+            return [new Date(peak).getTime(), entity.attributes.bpm[index]];
+          });
+        color: '#D43D54'
+        stroke_width: 2
+        show:
+          in_header: false
+  - type: custom:apexcharts-card
+    apex_config:
+      chart:
+        height: 150px
+    graph_span: 7d
+    now:
+      show: true
+      color: red
+      label: now
+    header:
+      show: true
+      show_states: true
+      colorize_states: true
+      title: Oura Scores
+      standard_format: true
+    series:
+      - entity: sensor.oura_ring_sleep
+        name: Sleep
+        show:
+          in_chart: true
+        color: '#20bf6b'
+        type: column
+        group_by:
+          func: last
+          duration: 1d
+      - entity: sensor.oura_ring_readiness
+        name: Readiness
+        show:
+          in_chart: true
+        color: '#45aaf2'
+        type: column
+        group_by:
+          func: last
+          duration: 1d
+      - entity: sensor.oura_ring_activity
+        name: Activity
+        show:
+          in_chart: true
+        color: '#fed330'
+        type: column
+        group_by:
+          func: last
+          duration: 1d
+  - type: custom:apexcharts-card
+    apex_config:
+      chart:
+        height: 200px
+    graph_span: 7d
+    header:
+      show: true
+      show_states: true
+      colorize_states: true
+      title: Sleep
+      standard_format: true
+    series:
+      - entity: sensor.oura_ring_sleep
+        name: Score
+        show:
+          in_chart: false
+        color: white
+      - entity: sensor.sleep_resting_heart_rate_yesterday
+        name: HR
+        show:
+          in_chart: false
+      - entity: sensor.time_in_bed_yesterday
+        name: In Bed
+        type: area
+        color: grey
+        group_by:
+          func: last
+          duration: 1d
+        show:
+          legend_value: false
+      - entity: sensor.total_sleep_yesterday
+        name: Total Sleep
+        type: area
+        color: purple
+        group_by:
+          func: last
+          duration: 1d
+        show:
+          legend_value: false
+      - entity: sensor.rem_sleep_yesterday
+        name: REM
+        color: '#20bf6b'
+        group_by:
+          func: last
+          duration: 1d
+        type: column
+        show:
+          in_header: false
+      - entity: sensor.deep_sleep_yesterday
+        name: Deep
+        color: '#45aaf2'
+        type: column
+        group_by:
+          func: last
+          duration: 1d
+        show:
+          in_header: false
+      - entity: sensor.light_sleep_yesterday
+        name: Light
+        type: column
+        color: '#fed330'
+        group_by:
+          func: last
+          duration: 1d
+        show:
+          in_header: false
+      - entity: sensor.time_awake_yesterday
+        name: Awake
+        color: '#fc5c65'
+        type: column
+        group_by:
+          func: last
+          duration: 1d
+        show:
+          in_header: false
+```
 
 ## *Notice: This is a work in progress, all help is welcome :)*
 
