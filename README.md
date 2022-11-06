@@ -7,6 +7,15 @@ A custom component to display the [Oura Ring](https://cloud.ouraring.com/) data 
 
 # Installation
 This can be installed via HACS or by copying all the files from custom_components/oura_ring_ha/ to <config directory>/custom_components/ouraring/.
+    
+## To add the repo to HACS:
+1. Goto integrations
+2. Click the dot menu on top right corner and select “custom repositories”
+3. Copy the repo address to the field and select integration
+4. Click Add
+    
+![image](https://user-images.githubusercontent.com/3003773/200173483-f78fdf81-13e1-4f53-a85b-7d93b919821e.png)
+
 
 # Configuration
 Add the following to *configuration.yaml*
@@ -16,6 +25,7 @@ Add the following to *configuration.yaml*
     
         - platform: ouraring
           api_token: API_TOKEN_HERE
+    *API Token can be generated here: https://cloud.ouraring.com/personal-access-tokens
 
 The above configuration will generate the following sensor entities with the state set as the Oura score for each category respectively
    
