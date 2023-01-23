@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Hello World
+      run: echo "Hello, world!"
+      
     - name: Sync and merge upstream nitobuendia/oura-custom-component with akeslo/ouraring-ha
       uses: dabreadman/sync-upstream-repo@v1.0.0.b
       with:
