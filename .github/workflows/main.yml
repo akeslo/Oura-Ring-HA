@@ -2,7 +2,7 @@ name: Sync Upstream
 
 on:
   schedule:
-    - cron: '* * * * *' # why wont you run?
+    - cron: '5 * * * *'
   push:
     branches:
       - main
