@@ -1,0 +1,17 @@
+name: Hello World
+
+on:
+  schedule:
+    - cron: '5 * * * *'
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Hello World
+      run: echo "Hello, world!"
